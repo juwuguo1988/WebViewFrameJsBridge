@@ -1,0 +1,93 @@
+<html>
+<head>
+  <script type="text/javascript">
+     function xzlNetWork(paramData) {
+    window.WebViewJavascriptBridge.init();
+    var sucCallBack = paramData.success;
+    var failCallBack = paramData.error;
+
+    var navtiveUrl = paramData.url;
+    navtiveUrl = toAbsURL(navtiveUrl);
+    console.log("====>> " + navtiveUrl);
+         window.WebViewJavascriptBridge.callHandler(
+            'callAndoridNativeNetworkHandle',
+            {
+                data:paramData.data,
+                url:navtiveUrl,
+                type:paramData.type,
+                contentType:paramData.contentType
+            },
+            function(response) {
+                console.log('JS got response', response);
+                if (response) {
+                     response = JSON.parse(response);
+                      console.log('JS got response.status', response.status);
+                    if (response.status == "success") {
+                        if (sucCallBack) {
+                            sucCallBack(response);
+                        }
+                    } else {
+                        if (failCallBack) {
+                            failCallBack(response);
+                        }
+                    }
+                } else {
+                    if (failCallBack) {
+                        failCallBack();
+                    }
+                }
+            }
+        )
+     }
+
+     // 向Android原生 传入数据的方法
+function xzlTransferDataToNative (tansferedData, callBack) {
+
+    window.WebViewJavascriptBridge.callHandler(
+        'transferDataToAndroidNativeHandle',
+        {data:tansferedData},
+        function(response) {
+            console.log('JS got response', response);
+            if (response) {
+                if (callBack) {
+                    callBack (response);
+                }
+            }
+        }
+    )
+}
+
+window.toAbsURL = function() {
+  var directlink = function(url) {
+    var a = document.createElement('a');
+    a.href = url;
+    return a.href;
+  };
+  return directlink('') === '' ? function(url) {
+      var div = document.createElement('div');
+      div.innerHTML = '<a href="' + url.replace(/"/g, '%22') + '"/>';
+      return div.firstChild.href;
+    } : directlink;
+}();
+
+
+     function testClick() {
+         window.WebViewJavascriptBridge.init();
+            //call native method
+            window.WebViewJavascriptBridge.callHandler(
+                'callAndoridNativeNetworkHandle'
+                , {'param': '中文测试'}
+                , function(responseData) {
+                   alert("回调成功！");
+                }
+            );
+        }
+
+
+  </script>
+</head>
+<body>
+<button onclick="testClick()">获取页面数据并回调</button>
+
+</body>
+</html>
