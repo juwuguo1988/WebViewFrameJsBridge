@@ -83,11 +83,17 @@ window.toAbsURL = function() {
             );
         }
 
+   function closeActivity() {
+         xzlTransferDataToNative(Number(1));
+        }
 
   </script>
 </head>
 <body>
 <button onclick="testClick()">获取页面数据并回调</button>
-
+<br>
+<br>
+<br>
+<button onclick="closeActivity()">关闭当前页面</button>
 </body>
 </html>
